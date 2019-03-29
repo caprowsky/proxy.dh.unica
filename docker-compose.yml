@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  main-nginx:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: dhunica_nginx
+    restart: always
+    external_links:
+      - dh.unica_nginx
+    networks:
+      - default
+      - dhunica_default
+    volumes:
+      - ./sites-enabled:/etc/nginx/sites-enabled
+      - ./html:/var/www/html
+      - ./redirect:/etc/nginx/redirect
+    ports:
+     - "80:80"
+     - "443:443"
+
+networks:
+  dhunica_default:
+    external: true
