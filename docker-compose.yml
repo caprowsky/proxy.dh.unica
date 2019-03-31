@@ -19,6 +19,8 @@ services:
     ports:
      - "80:80"
      - "443:443"
+    environment:
+      NGINX_ERROR_LOG_LEVEL: debug
 
 networks:
   dhunica_default:
