@@ -5,7 +5,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    container_name: dhunica_nginx
+    container_name: dhunica_proxypass
     restart: always
     external_links:
       - dh.unica_nginx
