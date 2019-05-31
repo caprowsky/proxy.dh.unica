@@ -9,6 +9,7 @@ services:
     restart: always
     external_links:
       - dh.unica_nginx
+      - dhunica_laravel_default
     networks:
       - default
       - dhunica_default
