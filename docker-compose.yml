@@ -13,6 +13,7 @@ services:
     networks:
       - default
       - dhunica_default
+      - dhunica_laravel_default
     volumes:
       - ./sites-enabled:/etc/nginx/sites-enabled
       - ./html:/var/www/html
@@ -25,4 +26,6 @@ services:
 
 networks:
   dhunica_default:
+    external: true
+  dhunica_laravel_default:
     external: true
