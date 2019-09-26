@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker exec -it dhunica_nginx  nginx -s reload
+docker exec -it dhunica_proxypass  nginx -s reload
