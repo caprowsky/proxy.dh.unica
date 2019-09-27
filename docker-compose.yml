@@ -18,6 +18,8 @@ services:
       - ./sites-enabled:/etc/nginx/sites-enabled
       - ./html:/var/www/html
       - ./redirect:/etc/nginx/redirect
+      - ./ssl-proof:/var/www/ssl-proof
+      - /etc/letsencrypt:/etc/letsencrypt
     ports:
      - "80:80"
      - "443:443"
