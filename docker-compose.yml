@@ -20,6 +20,7 @@ services:
       - ./redirect:/etc/nginx/redirect
       - ./ssl-proof:/var/www/ssl-proof
       - /etc/letsencrypt:/etc/letsencrypt
+      - /etc/digicertca:/etc/digicertca
     ports:
      - "80:80"
      - "443:443"
