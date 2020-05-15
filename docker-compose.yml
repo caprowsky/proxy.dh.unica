@@ -21,6 +21,7 @@ services:
       - ./ssl-proof:/var/www/ssl-proof
       - /etc/letsencrypt:/etc/letsencrypt
       - /etc/digicertca:/etc/digicertca
+      - ./htpassword:/etc/password_custom
     ports:
      - "80:80"
      - "443:443"
