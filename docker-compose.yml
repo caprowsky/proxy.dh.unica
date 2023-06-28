@@ -26,7 +26,7 @@ services:
      - "80:80"
      - "443:443"
     environment:
-      NGINX_ERROR_LOG_LEVEL: debug
+      NGINX_ERROR_LOG_LEVEL: error
 
 networks:
   dhunica_default:
