@@ -80,21 +80,14 @@ Il file `redirect/spacagliari.conf` contiene mappature per il reindirizzamento d
 Alcuni siti hanno configurazioni per l'autenticazione HTTP Basic (attualmente commentate):
 - `archiviostorico.unica.it` (configurazione presente ma disabilitata)
 
-## Server Backend
+## Architettura Backend
 
-### Server Interni Docker
-- `dh.unica_nginx:80` - Server principale per tutti i sottoprogetti DH
-- `labimus_apache_1:80` - Server Apache per il laboratorio musicale
+Il reverse proxy gestisce il traffico inoltrando le richieste dai domini pubblici ai server backend. La mappatura completa è visibile nella colonna "Destinazione Backend" della tabella principale.
 
-### Server Esterni (IP: 90.147.144.x)
-- **90.147.144.145**: Glossari (8080), Alghero (7000), Antas (8000), Caligola (4000), Cloudant (5000), DBAS (6000)
-- **90.147.144.146**: Patrimonio Web (8000), Patrimonio (9000), Risorse (7000)
-- **90.147.144.147**: EMODSAR (8000), Phaidra (9000)
-- **90.147.144.148**: GIS Cagliari (80), Humanities (7000), CoSMoMed (9000)
-- **90.147.144.149**: Cemetery (9000), X-DAMS (80)
-- **90.147.144.156**: 400 Anni (7000), The Last of Us (5000), SCCSU (6000), Nuragic (8000)
-- **90.147.144.162**: ArchivioStorico (5000), DigitalIstStorico main (8000), DigitalIstStorico risorse (6000)
-- **90.147.144.180**: Saturniana (8000)
+### Tipi di Backend
+- **Container Docker Interni**: `dh.unica_nginx:80`, `labimus_apache_1:80`
+- **Server Fisici Esterni**: Range IP 90.147.144.x con porte specifiche
+- **Bilanciamento**: Ogni URL pubblico ha una destinazione backend dedicata
 
 ## Statistiche
 
