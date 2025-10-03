@@ -342,7 +342,7 @@ done
 
 ## 📚 Documentazione
 
-- 📋 **[Lista Completa Siti](doc/SITI_WEB_REVERSE_PROXY.md)** - Tutti i 47 siti web gestiti
+- 📋 **[Lista Completa Siti](/doc/SITI_WEB_REVERSE_PROXY.md)** - Tutti i 47 siti web gestiti
 - ⚙️ **[Copilot Instructions](.github/copilot-instructions.md)** - Guide per AI agents  
 - 🐳 **[Docker Compose](docker-compose.yml)** - Configurazione container
 - 📜 **[Scripts di Gestione](nginx-*.sh)** - Automazione operazioni
