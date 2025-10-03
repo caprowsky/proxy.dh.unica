@@ -25,7 +25,7 @@ jobs:
         echo "Author: ${{ github.actor }}"
         
         # Invia richiesta al webhook server
-        curl -f -X POST "http://90.147.144.144:9000/deploy" \
+        curl -f -X POST "http://90.147.144.144:8080/deploy" \
           -H "Content-Type: application/json" \
           -d '{
             "repository": "${{ github.repository }}",
