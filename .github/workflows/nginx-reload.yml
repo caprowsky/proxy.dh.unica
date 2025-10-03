@@ -1,0 +1,42 @@
+name: Simple Nginx Reload
+
+# Trigger del workflow: push sul branch master
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  reload-nginx:
+    name: Reload Nginx Configuration
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checkout del codice (necessario per eventuali verifiche)
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    # Connetti via SSH e fai solo il reload di nginx
+    - name: Reload Nginx via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.PORT || 22 }}
+        script: |
+          # Naviga nella directory del progetto
+          cd /home/ale/docker/proxy.dh.unica
+          
+          # Pulisce eventuali cambiamenti locali e fa pull dei nuovi cambiamenti
+          git fetch origin
+          git reset --hard origin/master
+          git pull origin master
+          
+          # Esegue il reload di nginx (ricarica configurazione senza downtime)
+          chmod +x nginx-reload.sh
+          ./nginx-reload.sh
+          
+          # Verifica che la configurazione sia corretta
+          docker exec dhunica_proxypass nginx -t
+          
+          echo "✅ Nginx configuration reloaded successfully!"

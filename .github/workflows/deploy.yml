@@ -1,0 +1,61 @@
+name: Deploy to Production
+
+# Trigger del workflow: push sul branch master
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checkout del codice
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    # Deploy tramite SSH
+    - name: Deploy to server via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.PORT || 22 }}
+        script: |
+          # Naviga nella directory del progetto
+          cd /home/ale/docker/proxy.dh.unica
+          
+          # Pulisce eventuali cambiamenti locali e fa pull dei nuovi cambiamenti
+          git fetch origin
+          git reset --hard origin/master
+          git pull origin master
+          
+          # Rebuild del container con le nuove configurazioni
+          docker-compose build --no-cache
+          
+          # Restart del container
+          docker-compose down
+          docker-compose up -d
+          
+          # Attende che il container sia completamente avviato
+          sleep 10
+          
+          # Esegue il reload di nginx
+          chmod +x nginx-reload.sh
+          ./nginx-reload.sh
+          
+          # Verifica che nginx sia running correttamente
+          docker exec dhunica_proxypass nginx -t
+
+    # Notifica del risultato
+    - name: Notify deployment result
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Deploy completato con successo!"
+        else
+          echo "❌ Deploy fallito!"
+          exit 1
+        fi
