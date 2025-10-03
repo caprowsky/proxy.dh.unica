@@ -1,0 +1,81 @@
+name: Complete Deploy Pipeline
+
+# Trigger del workflow: push sul branch master  
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    name: Deploy and Reload Nginx
+    runs-on: ubuntu-latest
+    environment: Production
+    
+    steps:
+    # 1. Checkout del codice
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    # 2. Debug della configurazione
+    - name: Debug secrets configuration
+      run: |
+        echo "HOST is set: ${{ secrets.HOST != '' }}"
+        echo "USERNAME is set: ${{ secrets.USERNAME != '' }}"
+        echo "SSH_PRIVATE_KEY is set: ${{ secrets.SSH_PRIVATE_KEY != '' }}"
+      
+    # 3. Test connessione SSH
+    - name: Test SSH Connection
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        timeout: 60s
+        command_timeout: 30s
+        script: |
+          echo "✅ SSH connection successful!"
+          echo "Current user: $(whoami)"
+          echo "Current directory: $(pwd)"
+          
+    # 4. Deploy del codice e reload nginx
+    - name: Deploy and Reload Nginx
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        timeout: 300s
+        command_timeout: 600s
+        script: |
+          # Naviga nella directory del progetto
+          cd /home/dhwp/proxy.dh.unica
+          
+          # Pulisce eventuali cambiamenti locali e fa pull dei nuovi cambiamenti
+          echo "🔄 Updating code from Git..."
+          git fetch origin
+          git reset --hard origin/master
+          git pull origin master
+          
+          # Esegue il reload di nginx (ricarica configurazione senza downtime)
+          echo "🔄 Reloading Nginx configuration..."
+          chmod +x nginx-reload.sh
+          ./nginx-reload.sh
+          
+          # Verifica che la configurazione sia corretta
+          echo "✅ Verifying Nginx configuration..."
+          docker exec dhunica_proxypass nginx -t
+          
+          echo "🎉 Deploy completed successfully!"
+
+    # 5. Notifica del risultato
+    - name: Notify deployment result
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Deploy completato con successo!"
+        else
+          echo "❌ Deploy fallito!"
+          exit 1
+        fi
