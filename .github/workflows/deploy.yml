@@ -22,7 +22,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.PORT || 22 }}
+        port: 22
         script: |
           # Naviga nella directory del progetto
           cd /home/ale/docker/proxy.dh.unica

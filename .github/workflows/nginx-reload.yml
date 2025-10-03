@@ -15,6 +15,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    # Verifica che i secrets siano configurati
+    - name: Debug secrets configuration
+      run: |
+        echo "HOST is set: ${{ secrets.HOST != '' }}"
+        echo "USERNAME is set: ${{ secrets.USERNAME != '' }}"
+        echo "SSH_PRIVATE_KEY is set: ${{ secrets.SSH_PRIVATE_KEY != '' }}"
+      
     # Connetti via SSH e fai solo il reload di nginx
     - name: Reload Nginx via SSH
       uses: appleboy/ssh-action@v1.0.3
@@ -22,7 +29,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.PORT || 22 }}
+        port: 22
         script: |
           # Naviga nella directory del progetto
           cd /home/ale/docker/proxy.dh.unica
