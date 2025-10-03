@@ -365,7 +365,7 @@ Questo progetto è sviluppato per l'**Università di Cagliari** - Dipartimento D
 
 <div align="center">
 
-**Fatto con ❤️ per la comunità Digital Humanities**
+**Fatto con ❤️ per la comunità Digital Humanities dell'Università degli Studi di Cagliari**
 
 [![University of Cagliari](https://img.shields.io/badge/University-of%20Cagliari-blue?style=for-the-badge)](https://www.unica.it/)
 
