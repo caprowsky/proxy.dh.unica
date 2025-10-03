@@ -23,7 +23,23 @@ jobs:
         echo "USERNAME is set: ${{ secrets.USERNAME != '' }}"
         echo "SSH_PRIVATE_KEY is set: ${{ secrets.SSH_PRIVATE_KEY != '' }}"
       
-    # Connetti via SSH e fai solo il reload di nginx
+    # Test connessione prima del deploy
+    - name: Test SSH Connection
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        timeout: 60s
+        command_timeout: 30s
+        script: |
+          echo "✅ SSH connection successful!"
+          echo "Current user: $(whoami)"
+          echo "Current directory: $(pwd)"
+          echo "Docker status: $(docker --version)"
+          
+    # Connetti via SSH e fai solo il reload di nginx  
     - name: Reload Nginx via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -31,9 +47,11 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
+        timeout: 180s
+        command_timeout: 600s
         script: |
           # Naviga nella directory del progetto
-          cd /home/ale/docker/proxy.dh.unica
+          cd /home/dhwp/proxy.dh.unica
           
           # Pulisce eventuali cambiamenti locali e fa pull dei nuovi cambiamenti
           git fetch origin

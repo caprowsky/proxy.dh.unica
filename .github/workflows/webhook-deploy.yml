@@ -1,0 +1,31 @@
+name: Deploy via Webhook
+
+# Trigger del workflow: push sul branch master
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy-webhook:
+    name: Deploy via Webhook
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checkout del codice
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    # Trigger webhook sul server
+    - name: Trigger Deploy Webhook
+      run: |
+        echo "🚀 Triggering deploy webhook..."
+        
+        # Se hai configurato un webhook endpoint sul server
+        # curl -X POST "http://90.147.144.144:8080/deploy" \
+        #   -H "Content-Type: application/json" \
+        #   -d '{"repository": "${{ github.repository }}", "branch": "master"}'
+        
+        # Per ora, notifica via webhook Discord/Slack se configurato
+        echo "Deploy triggered for ${{ github.repository }} on master branch"
+        echo "Commit: ${{ github.sha }}"
+        echo "Author: ${{ github.actor }}"
