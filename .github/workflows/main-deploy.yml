@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     name: Deploy and Reload Nginx
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Usa runner locale invece di GitHub
     environment: Production
     
     steps:
@@ -38,36 +38,28 @@ jobs:
           echo "Current user: $(whoami)"
           echo "Current directory: $(pwd)"
           
-    # 4. Deploy del codice e reload nginx
+    # 4. Deploy del codice e reload nginx (direttamente sul server)
     - name: Deploy and Reload Nginx
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        timeout: 300s
-        command_timeout: 600s
-        script: |
-          # Naviga nella directory del progetto
-          cd /home/dhwp/proxy.dh.unica
-          
-          # Pulisce eventuali cambiamenti locali e fa pull dei nuovi cambiamenti
-          echo "🔄 Updating code from Git..."
-          git fetch origin
-          git reset --hard origin/master
-          git pull origin master
-          
-          # Esegue il reload di nginx (ricarica configurazione senza downtime)
-          echo "🔄 Reloading Nginx configuration..."
-          chmod +x nginx-reload.sh
-          ./nginx-reload.sh
-          
-          # Verifica che la configurazione sia corretta
-          echo "✅ Verifying Nginx configuration..."
-          docker exec dhunica_proxypass nginx -t
-          
-          echo "🎉 Deploy completed successfully!"
+      run: |
+        # Naviga nella directory del progetto
+        cd /home/dhwp/proxy.dh.unica
+        
+        # Pulisce eventuali cambiamenti locali e fa pull dei nuovi cambiamenti
+        echo "🔄 Updating code from Git..."
+        git fetch origin
+        git reset --hard origin/master
+        git pull origin master
+        
+        # Esegue il reload di nginx (ricarica configurazione senza downtime)
+        echo "🔄 Reloading Nginx configuration..."
+        chmod +x nginx-reload.sh
+        ./nginx-reload.sh
+        
+        # Verifica che la configurazione sia corretta
+        echo "✅ Verifying Nginx configuration..."
+        docker exec dhunica_proxypass nginx -t
+        
+        echo "🎉 Deploy completed successfully!"
 
     # 5. Notifica del risultato
     - name: Notify deployment result
