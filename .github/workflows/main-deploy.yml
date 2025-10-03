@@ -1,4 +1,4 @@
-name: Complete Deploy Pipeline
+name: Deploy Notification
 
 # Trigger del workflow: push sul branch master  
 on:
@@ -6,8 +6,8 @@ on:
     branches: [ master ]
 
 jobs:
-  deploy:
-    name: Deploy via Webhook
+  notify-deploy:
+    name: Notify Server of New Deploy
     runs-on: ubuntu-latest
     
     steps:
@@ -15,23 +15,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
           
-    # 2. Trigger deploy webhook sul server
-    - name: Trigger Deploy Webhook
+    # 2. Notifica deploy (il server farà polling per controllare)
+    - name: Deploy Notification
       run: |
-        echo "🚀 Triggering deploy webhook on server..."
-        echo "Repository: ${{ github.repository }}"
-        echo "Branch: ${{ github.ref_name }}" 
-        echo "Commit: ${{ github.sha }}"
-        echo "Author: ${{ github.actor }}"
+        echo "🚀 Deploy triggered for repository: ${{ github.repository }}"
+        echo "📅 Time: $(date -u)"
+        echo "🔄 Branch: ${{ github.ref_name }}" 
+        echo "📝 Commit: ${{ github.sha }}"
+        echo "👤 Author: ${{ github.actor }}"
+        echo "📊 Commit message: ${{ github.event.head_commit.message }}"
         
-        # Invia richiesta al webhook server
-        curl -f -X POST "http://90.147.144.144:8080/deploy" \
-          -H "Content-Type: application/json" \
-          -d '{
-            "repository": "${{ github.repository }}",
-            "branch": "${{ github.ref_name }}",
-            "commit": "${{ github.sha }}",
-            "author": "${{ github.actor }}"
-          }' --connect-timeout 30 --max-time 60
-        
-        echo "✅ Deploy webhook sent successfully!"
+        echo "✅ GitHub Actions workflow completed!"
+        echo "💡 Server will auto-pull changes via cron job"
