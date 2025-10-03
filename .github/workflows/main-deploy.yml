@@ -7,23 +7,63 @@ on:
 
 jobs:
   notify-deploy:
-    name: Notify Server of New Deploy
+    name: Deploy and Show Status
     runs-on: ubuntu-latest
+    environment: Production
     
     steps:
     # 1. Checkout del codice
     - name: Checkout code
       uses: actions/checkout@v4
           
-    # 2. Notifica deploy (il server farà polling per controllare)
-    - name: Deploy Notification
-      run: |
-        echo "🚀 Deploy triggered for repository: ${{ github.repository }}"
-        echo "📅 Time: $(date -u)"
-        echo "🔄 Branch: ${{ github.ref_name }}" 
-        echo "📝 Commit: ${{ github.sha }}"
-        echo "👤 Author: ${{ github.actor }}"
-        echo "📊 Commit message: ${{ github.event.head_commit.message }}"
-        
-        echo "✅ GitHub Actions workflow completed!"
-        echo "💡 Server will auto-pull changes via cron job"
+    # 2. Trigger deploy immediato e mostra risultato
+    - name: Deploy and Show Result
+      uses: appleboy/ssh-action@v1.0.3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        host: 90.147.144.144
+        username: dhwp  
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        timeout: 120s
+        command_timeout: 300s
+        script: |
+          echo "🚀 Deploy triggered for repository: ${{ github.repository }}"
+          echo "📅 Time: $(date -u)"
+          echo "🔄 Branch: ${{ github.ref_name }}" 
+          echo "📝 Commit: ${{ github.sha }}"
+          echo "👤 Author: ${{ github.actor }}"
+          echo "📊 Commit message: ${{ github.event.head_commit.message }}"
+          echo ""
+          
+          # Esegui deploy immediato
+          echo "⚡ Executing immediate deploy..."
+          cd /home/dhwp/proxy.dh.unica
+          
+          # Forza il fetch per essere sicuri
+          git fetch origin
+          
+          LOCAL_COMMIT=$(git rev-parse HEAD)
+          REMOTE_COMMIT=$(git rev-parse origin/master)
+          
+          echo "📍 Local commit:  $LOCAL_COMMIT"
+          echo "📍 Remote commit: $REMOTE_COMMIT"
+          
+          if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
+              echo "� New commits found - deploying..."
+              
+              git reset --hard origin/master
+              git pull origin master
+              
+              echo "🔄 Executing nginx-reload.sh..."
+              chmod +x nginx-reload.sh
+              ./nginx-reload.sh
+              
+              echo "✅ Verifying nginx configuration..."
+              docker exec dhunica_proxypass nginx -t
+              
+              echo "🎉 Deploy completed successfully!"
+          else
+              echo "💡 Already up to date - no deploy needed"
+          fi
