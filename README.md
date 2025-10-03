@@ -349,7 +349,7 @@ done
 
 ---
 
-## 📄 Licenza 
+## 📄 Licenza
 
 Questo progetto è sviluppato per l'**Università di Cagliari** - Dipartimento Digital Humanities.
 
