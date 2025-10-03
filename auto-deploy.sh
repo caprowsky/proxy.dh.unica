@@ -32,18 +32,22 @@ if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
     echo "$(date): 🔄 Nuovi commit trovati - Deploy automatico in corso..."
     
     # Pull dei nuovi commit
+    echo "$(date): 📥 Eseguendo git reset e pull..."
     git reset --hard origin/master
     git pull origin master
     
     # Reload nginx
+    echo "$(date): 🔄 Eseguendo nginx-reload.sh..."
     chmod +x nginx-reload.sh
     ./nginx-reload.sh
     
     # Verifica nginx
+    echo "$(date): ✅ Verificando configurazione nginx..."
     docker exec dhunica_proxypass nginx -t
     
-    echo "$(date): ✅ Deploy automatico completato!"
-    echo "$(date): 📝 Commit: $REMOTE_COMMIT"
+    echo "$(date): 🎉 Deploy automatico completato con successo!"
+    echo "$(date): 📝 Commit applicato: $REMOTE_COMMIT"
+    echo "$(date): ---"
 else
     echo "$(date): 💤 Nessun nuovo commit"
 fi
