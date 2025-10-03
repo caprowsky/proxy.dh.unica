@@ -7,8 +7,8 @@ on:
 
 jobs:
   deploy:
-    name: Deploy and Reload Nginx
-    runs-on: self-hosted  # Usa runner locale invece di GitHub
+    name: Deploy via Webhook
+    runs-on: ubuntu-latest  # Torna ai GitHub runners
     environment: Production
     
     steps:
@@ -38,28 +38,25 @@ jobs:
           echo "Current user: $(whoami)"
           echo "Current directory: $(pwd)"
           
-    # 4. Deploy del codice e reload nginx (direttamente sul server)
-    - name: Deploy and Reload Nginx
+    # 4. Trigger deploy webhook sul server
+    - name: Trigger Deploy Webhook
       run: |
-        # Naviga nella directory del progetto
-        cd /home/dhwp/proxy.dh.unica
+        echo "🚀 Triggering deploy webhook on server..."
         
-        # Pulisce eventuali cambiamenti locali e fa pull dei nuovi cambiamenti
-        echo "🔄 Updating code from Git..."
-        git fetch origin
-        git reset --hard origin/master
-        git pull origin master
+        # Invia richiesta al webhook server
+        curl -f -X POST "http://90.147.144.144:9000/deploy" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "repository": "${{ github.repository }}",
+            "branch": "${{ github.ref_name }}",
+            "commit": "${{ github.sha }}",
+            "author": "${{ github.actor }}"
+          }' || {
+          echo "❌ Webhook failed! Server might be down."
+          exit 1
+        }
         
-        # Esegue il reload di nginx (ricarica configurazione senza downtime)
-        echo "🔄 Reloading Nginx configuration..."
-        chmod +x nginx-reload.sh
-        ./nginx-reload.sh
-        
-        # Verifica che la configurazione sia corretta
-        echo "✅ Verifying Nginx configuration..."
-        docker exec dhunica_proxypass nginx -t
-        
-        echo "🎉 Deploy completed successfully!"
+        echo "✅ Deploy webhook sent successfully!"
 
     # 5. Notifica del risultato
     - name: Notify deployment result
