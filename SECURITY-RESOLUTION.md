@@ -6,17 +6,15 @@
 2. **Implementata gestione sicura**: Lo script ora usa variabili d'ambiente invece di token hardcoded
 3. **Aggiornato .gitignore**: Prevenire future esposizioni di file con secrets
 
-## ❗ AZIONI URGENTI RICHIESTE
+## ✅ AZIONI COMPLETATE
 
-### 1. Rigenera ENTRAMBI i Token GitHub Actions (PRIORITÀ CRITICA!)
-⚠️ **SCOPERTA AGGIUNTIVA**: Trovato un secondo token nel file `.env`!
+### 1. Token GitHub Actions Revocati ✅
+✅ **COMPLETATO**: Entrambi i token compromessi sono stati revocati!
 
-**Azioni da fare ORA**:
-1. Vai su: https://github.com/caprowsky/proxy.dh.unica/settings/actions/runners
-2. Rimuovi TUTTI i runner esistenti associati a questi token
-3. Clicca "New self-hosted runner"
-4. Copia il NUOVO token generato
-5. Sostituisci nei tuoi script locali
+**Prossimi passi opzionali**:
+1. ✅ Token vecchi revocati
+2. 🔄 **Se necessario**: Crea nuovo runner su GitHub
+3. 🔧 **Se necessario**: Configura nuovo token usando i metodi sicuri sotto
 
 ### 2. Configurazione del Nuovo Token
 
@@ -54,13 +52,13 @@ echo "RUNNER_TOKEN=IL_TUO_NUOVO_TOKEN" > .env
 - `.env.example`: Template per configurazione sicura
 - `SECURITY-RESOLUTION.md`: Questo documento
 
-## 🚨 Promemoria Importante
+## ✅ TOKEN REVOCATI - SICUREZZA RIPRISTINATA!
 
-**ENTRAMBI i token esposti SONO ANCORA ATTIVI** finché non vengono revocati manualmente su GitHub:
-- `AABJOTQKHMSLHE5O5ICDPB3I36ZP4` (era in docker-runner.sh)
-- `AABJOTSSZ65CW2CU5HXLW6TI4OMLS` (era in .env)
+**STATO: RISOLTO** - I token compromessi sono stati revocati:
+- ~~`AABJOTQKHMSLHE5O5ICDPB3I36ZP4`~~ ✅ **REVOCATO**
+- ~~`AABJOTSSZ65CW2CU5HXLW6TI4OMLS`~~ ✅ **REVOCATO**
 
-**REVOCARE IMMEDIATAMENTE ENTRAMBI!**
+**I vecchi token non sono più utilizzabili!**
 
 ## ✅ Azioni Completate Aggiuntive
 
