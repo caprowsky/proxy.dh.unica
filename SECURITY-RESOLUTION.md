@@ -8,15 +8,15 @@
 
 ## ❗ AZIONI URGENTI RICHIESTE
 
-### 1. Rigenera il Token GitHub Actions (PRIORITÀ ALTA)
-Il token esposto DEVE essere revocato e rigenerato:
+### 1. Rigenera ENTRAMBI i Token GitHub Actions (PRIORITÀ CRITICA!)
+⚠️ **SCOPERTA AGGIUNTIVA**: Trovato un secondo token nel file `.env`!
 
+**Azioni da fare ORA**:
 1. Vai su: https://github.com/caprowsky/proxy.dh.unica/settings/actions/runners
-2. Trova il runner "dh-unica-docker" o simile
-3. Rimuovi il runner esistente
-4. Clicca "New self-hosted runner"
-5. Copia il NUOVO token generato
-6. Sostituisci il vecchio token ovunque sia utilizzato
+2. Rimuovi TUTTI i runner esistenti associati a questi token
+3. Clicca "New self-hosted runner"
+4. Copia il NUOVO token generato
+5. Sostituisci nei tuoi script locali
 
 ### 2. Configurazione del Nuovo Token
 
@@ -56,4 +56,13 @@ echo "RUNNER_TOKEN=IL_TUO_NUOVO_TOKEN" > .env
 
 ## 🚨 Promemoria Importante
 
-**Il vecchio token `AABJOTQKHMSLHE5O5ICDPB3I36ZP4` È ANCORA ATTIVO** finché non viene revocato manualmente su GitHub. Farlo IMMEDIATAMENTE!
+**ENTRAMBI i token esposti SONO ANCORA ATTIVI** finché non vengono revocati manualmente su GitHub:
+- `AABJOTQKHMSLHE5O5ICDPB3I36ZP4` (era in docker-runner.sh)
+- `AABJOTSSZ65CW2CU5HXLW6TI4OMLS` (era in .env)
+
+**REVOCARE IMMEDIATAMENTE ENTRAMBI!**
+
+## ✅ Azioni Completate Aggiuntive
+
+- **File .env rimosso dal tracciamento git**: Il file conteneva un secondo token esposto
+- **Cronologia pulita**: Il file .env è ora nell'area .gitignore e non sarà più tracciato
