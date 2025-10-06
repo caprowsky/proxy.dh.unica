@@ -1,2 +1,16 @@
 .idea
 dh-cert/
+
+# File di configurazione con secrets - NON COMMITARE MAI!
+.env
+*.env
+!.env.example
+
+# Backup e file temporanei con potenziali secrets
+*.bak
+*.tmp
+*~
+
+# Log files che potrebbero contenere informazioni sensibili
+*.log
+logs/
