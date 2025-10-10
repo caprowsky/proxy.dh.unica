@@ -167,7 +167,7 @@ curl -I https://storia.dh.unica.it/colonizzazioninterne
 
 ```
 
-> 📋 **Lista completa**: Vedi [doc/SITI_WEB_REVERSE_PROXY.md](SITI_WEB_REVERSE_PROXY.md) per la tabella dettagliata di tutti i siti.
+> 📋 **Lista completa**: Vedi [SITI_WEB_REVERSE_PROXY.md](doc/SITI_WEB_REVERSE_PROXY.md) per la tabella dettagliata di tutti i siti.
 
 ---
 
