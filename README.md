@@ -17,9 +17,6 @@
 
 Questo progetto implementa un **reverse proxy nginx** ad alta disponibilità che gestisce il traffico per **47+ siti web** dell'Università di Cagliari, principalmente focalizzati sulle Digital Humanities. Il sistema route intelligentemente le richieste tra domini pubblici e servizi backend distribuiti.
 
-### ✨ Caratteristiche Principali
-
-- 🔄 **Reverse Proxy Intelligente** - Gestione centralizzata di 30+ domini
 - 🐳 **Containerizzato** - Deployment semplificato con Docker
 - 🔐 **SSL/TLS Completo** - Certificati DigiCert CA e Let's Encrypt
 - 🌍 **Multi-dominio** - Supporto per domini `.unica.it`, `.dh.unica.it` e domini esterni
