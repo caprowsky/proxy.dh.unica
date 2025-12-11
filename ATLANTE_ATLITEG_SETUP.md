@@ -35,7 +35,7 @@ cd /path/to/proxy.dh.unica
 
 # Generate the SSL certificate using certbot
 sudo certbot certonly --webroot \
-  -w /path/to/proxy.dh.unica/ssl-proof/atlante_atliteg \
+  -w /home/dhwp/proxy.dh.unica/ssl-proof/atlante_atliteg \
   -d atlante.atliteg.org \
   --email your-email@example.com \
   --agree-tos \
