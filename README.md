@@ -131,8 +131,8 @@ curl -I https://storia.dh.unica.it/colonizzazioninterne
 ## 🌍 Siti Web Gestiti
 
 ### 📊 Statistiche Generali
-- **47 URL pubbliche** distinte
-- **6 domini principali** (dh.unica.it, unica.it, cosmomed.org, digitaliststor.it, thelastofus.it)
+- **48 URL pubbliche** distinte
+- **7 domini principali** (dh.unica.it, unica.it, cosmomed.org, digitaliststor.it, thelastofus.it, atliteg.org)
 - **23 sottoprogetti** del dominio dh.unica.it
 - **8 server backend** fisici/virtuali
 
@@ -159,6 +159,7 @@ curl -I https://storia.dh.unica.it/colonizzazioninterne
 
 #### Domini Esterni
 ```
+🗺️ https://atlante.atliteg.org           - Atlante ATLITEG
 🌍 https://www.cosmomed.org               - CoSMoMed Project
 📚 https://www.digitaliststor.it          - Istituto Storia Digitale
 
