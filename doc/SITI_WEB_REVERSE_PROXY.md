@@ -62,6 +62,7 @@ Questo progetto implementa un reverse proxy bassu su **nginx** che gestisce il t
 | **https://patrimonio-web.archiviostorico.unica.it** | `90.147.144.146:8000` | UNICA Sottodominio | Interfaccia web patrimonio | DigiCert CA |
 | **https://400.unica.it** | `90.147.144.156:7000` | UNICA Dominio | 400 anni dell'Ateneo | DigiCert CA |
 | **https://humanities.unica.it** | `90.147.144.148:7000` | UNICA Dominio | Portale discipline umanistiche | DigiCert CA |
+| **https://atlante.atliteg.org** | `90.147.144.147:9000` | Dominio Esterno | Atlante ATLITEG | Let's Encrypt |
 | **https://www.cosmomed.org** | `90.147.144.148:9000` | Dominio Esterno | Comparative Studies Mediterranean | Let's Encrypt |
 | **https://www.digitaliststor.it** | `90.147.144.162:8000` | Dominio Esterno | Istituto per la Storia Digitale | Let's Encrypt |
 | **https://www.digitaliststor.it/risorse** | `90.147.144.162:6000` | Sottopercorso Esterno | Risorse DigitalIstStorico | Let's Encrypt |
@@ -91,8 +92,8 @@ Il reverse proxy gestisce il traffico inoltrando le richieste dai domini pubblic
 
 ## Statistiche
 
-- **Totale siti web**: 33+ siti web distinti
-- **Domini principali**: 6 (dh.unica.it, unica.it, cosmomed.org, digitaliststor.it, thelastofus.it)
+- **Totale siti web**: 34+ siti web distinti
+- **Domini principali**: 7 (dh.unica.it, unica.it, cosmomed.org, digitaliststor.it, thelastofus.it, atliteg.org)
 - **Sottoprogetti DH**: 23 sottoprogetti del dominio dh.unica.it
 - **Server backend**: 10 server fisici/virtuali distinti
 
