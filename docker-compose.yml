@@ -22,6 +22,12 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
       - /etc/digicertca:/etc/digicertca
       - ./htpassword:/etc/password_custom
+      - ./logs/nginx:/var/log/nginx
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     ports:
      - "80:80"
      - "443:443"
