@@ -14,3 +14,6 @@ dh-cert/
 # Log files che potrebbero contenere informazioni sensibili
 *.log
 logs/
+
+# Certificati SSL temporanei
+new_ssl/
