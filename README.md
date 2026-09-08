@@ -93,7 +93,9 @@ docker logs dhunica_proxypass
 | `./nginx-reload.sh` | 🔄 Ricarica configurazione senza downtime | Modifiche alle configurazioni |
 | `./nginx-restart.sh` | 🔄 Restart completo del container | Cambiamenti strutturali |
 | `./nginx-reset.sh` | 🔄 Rebuild completo | Problemi critici |
-| `./nginx-certs.sh` | 🔐 Rinnovo certificati SSL | Manutenzione certificati |
+| `./nginx-certs.sh` | 🔐 Rinnovo **manuale** dei certificati Let's Encrypt | Solo per forzare un rinnovo: quello automatico e' gia' attivo |
+| `./scripts/install-certbot-deploy-hook.sh` | 🔐 (Re)installa il deploy hook di certbot | Dopo un reinstall del server o se l'hook viene perso |
+| `python3 scripts/check_ssl_expiry.py` | 📅 Scadenze di tutti i virtual host | Controllo periodico, produce `scripts/ssl_expiry_report.csv` |
 
 ### Aggiungere un Nuovo Sito
 
@@ -330,15 +332,38 @@ docker exec dhunica_proxypass nginx -t
 </details>
 
 <details>
-<summary><strong>🔴 Errore SSL</strong></summary>
+<summary><strong>🔴 Certificato scaduto o errore SSL</strong></summary>
+
+**Prima di tutto: distinguere il certificato su disco da quello servito.** Sono
+due cose diverse e nella maggior parte dei casi il problema sta nella differenza
+fra le due.
 
 ```bash
-# Verifica certificati
-ls -la /etc/digicertca/live/dh.unica.it/
-ls -la /etc/letsencrypt/live/domain/
+# 1. Cosa sta servendo nginx adesso (dall'esterno)
+echo | openssl s_client -servername DOMINIO -connect DOMINIO:443 2>/dev/null \
+  | openssl x509 -noout -dates
 
-# Rinnova certificati
-./nginx-certs.sh
+# 2. Cosa c'e' su disco
+sudo openssl x509 -in /etc/letsencrypt/live/DOMINIO/fullchain.pem -noout -dates
+# senza sudo, sfruttando il bind mount del container:
+docker exec dhunica_proxypass cat /etc/letsencrypt/live/DOMINIO/fullchain.pem \
+  | openssl x509 -noout -dates
+```
+
+| Esito del confronto | Causa | Rimedio |
+|---|---|---|
+| Su disco e' **valido**, servito e' **scaduto** | Nginx non e' stato ricaricato dopo il rinnovo: tiene in memoria i certificati letti all'avvio | `docker exec dhunica_proxypass nginx -s reload`, poi verificare che il deploy hook sia installato (vedi sotto) |
+| Scaduto **anche su disco**, dominio Let's Encrypt | Il rinnovo non e' andato a buon fine | `sudo certbot renew --force-renewal -d DOMINIO` e leggere `/var/log/letsencrypt/letsencrypt.log` |
+| Scaduto **anche su disco**, dominio DigiCert (`*.unica.it`) | Certificato commerciale: certbot non c'entra | Va richiesto all'ateneo e installato in `/etc/digicertca/live/` |
+
+⚠️ Il primo caso e' quello che ha fatto cadere `atlante.atliteg.org` a settembre
+2026: certificato rinnovato regolarmente l'08/08, container up da 4 mesi, quindi
+il proxy ha continuato a servire il certificato di giugno fino alla scadenza del
+07/09. Se ricapita, controllare **subito** che il deploy hook esista:
+
+```bash
+ls -l /etc/letsencrypt/renewal-hooks/deploy/    # deve contenere 00-reload-dhunica-proxy.sh
+sudo tail /var/log/certbot-deploy-hook.log      # deve mostrare un reload per ogni rinnovo
 ```
 </details>
 
@@ -371,6 +396,16 @@ for url in storia.dh.unica.it arte.dh.unica.it; do
 done
 ```
 
+**Log rilevanti**
+
+| File | Contenuto |
+|------|-----------|
+| `/var/log/certbot-deploy-hook.log` | Un reload di nginx per ogni certificato rinnovato. **Se resta vuoto per mesi mentre i certificati vengono rinnovati, il deploy hook non sta girando** |
+| `/var/log/letsencrypt/letsencrypt.log` | Esito dei rinnovi certbot (richiede sudo) |
+| `logs/nginx-reload-safety-net.log` | Reload graceful giornaliero della rete di sicurezza |
+| `/home/dhwp/auto-deploy.log` | Auto-deploy da git (gira ogni minuto) |
+| `logs/nginx/` | Access ed error log di nginx |
+
 ---
 
 ## 🤝 Contributi
@@ -390,6 +425,19 @@ done
 - **Testing**: Testare con `nginx -t` prima del deploy
 - **Documentation**: Aggiornare `SITI_WEB_REVERSE_PROXY.md`
 
+⚠️ **Modifiche fatte a mano sul proxy vanno committate.** `auto-deploy.sh` gira
+ogni minuto e, appena trova un commit nuovo su `origin/master`, azzera il
+working tree su quel commit: qualsiasi modifica non committata presente sul
+server viene cancellata dal primo push utile, anche se fatta da qualcun altro
+mesi prima. Prima di pushare, controllare sempre lo stato del repo in
+produzione:
+
+```bash
+ssh dhwp@90.147.144.144 'cd /home/dhwp/proxy.dh.unica && git status --short && git diff'
+```
+
+(I file untracked invece sopravvivono all'azzeramento.)
+
 ---
 
 ## 📚 Documentazione
@@ -398,6 +446,9 @@ done
 - ⚙️ **[Copilot Instructions](.github/copilot-instructions.md)** - Guide per AI agents  
 - 🐳 **[Docker Compose](docker-compose.yml)** - Configurazione container
 - 📜 **[Scripts di Gestione](nginx-*.sh)** - Automazione operazioni
+- 🔐 **[Deploy hook SSL](scripts/certbot-deploy-hook.sh)** - Reload di nginx dopo ogni rinnovo certificato
+- 🛟 **[Rete di sicurezza SSL](scripts/nginx-reload-safety-net.sh)** - Reload graceful giornaliero da cron
+- 📅 **[Check scadenze SSL](scripts/check_ssl_expiry.py)** - Report su tutti i virtual host
 
 ---
 
