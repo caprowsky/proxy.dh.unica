@@ -1,6 +1,19 @@
 # GitHub Actions Deploy Setup
 
-Questo repository include due GitHub Actions per automatizzare il deploy:
+> ⚠️ **Stato attuale: questi workflow sono disabilitati.** I file sul ramo master
+> sono `deploy.yml.disabled`, `nginx-reload.yml.disabled` e
+> `webhook-deploy.yml.disabled`; l'unico workflow attivo e' `main-deploy.yml`, che
+> si limita a stampare una notifica.
+>
+> **Il deploy in produzione non passa da GitHub Actions**: sul proxy gira un cron
+> al minuto che esegue `auto-deploy.sh`, il quale allinea il repo a
+> `origin/master` e ricarica nginx. Nessun secret SSH e' quindi necessario per il
+> deploy ordinario.
+>
+> Questo documento resta come riferimento se in futuro si volesse riattivare il
+> deploy push-based, rinominando i file senza il suffisso `.disabled`.
+
+I due workflow (disabilitati) previsti sono:
 
 ## 1. `deploy.yml` - Deploy Completo
 Esegue un rebuild completo del container quando viene fatto push su master.

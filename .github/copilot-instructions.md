@@ -46,8 +46,23 @@ server {
 
 ### SSL Certificate Strategy
 - **DigiCert**: `/etc/digicertca/live/dh.unica.it/` for all `*.unica.it` domains
+  (commercial certificates, renewed manually via the university - certbot is not involved)
 - **Let's Encrypt**: `/etc/letsencrypt/live/{domain}/` for external domains
-- **SSL Proof**: Organized by domain in `/var/www/ssl-proof/{domain}/`
+  (renewed automatically, see below)
+- **SSL Proof**: Organized by domain in `/var/www/ssl-proof/{domain}/`, bind-mounted
+  into the container at `/var/www/ssl-proof` for the ACME http-01 challenge
+
+### Automatic Renewal (two parts, both required)
+1. `snap.certbot.renew.timer` runs `certbot renew` twice a day (host systemd)
+2. `/etc/letsencrypt/renewal-hooks/deploy/00-reload-dhunica-proxy.sh` reloads nginx
+   inside the container **after** each renewal - source of truth is
+   `scripts/certbot-deploy-hook.sh` in this repo
+
+**Never assume a renewed certificate is being served.** Nginx reads certificates at
+startup and keeps them in memory: without part 2 the container serves the old
+certificate until it expires, which is exactly what took down `atlante.atliteg.org`
+in September 2026. When touching certificates, always compare what is on disk with
+what is actually served (`openssl s_client`) - see the README troubleshooting section.
 
 ## Backend Infrastructure
 
@@ -80,14 +95,31 @@ Key IP ranges and their services:
 ./nginx-reset.sh
 ```
 
-### SSL Certificate Management  
+### SSL Certificate Management
 ```bash
-# Renew Let's Encrypt certificates and reload
+# Renewal is automatic (certbot timer + deploy hook). These are for manual work:
+
+# Force a renewal now, then reload
 ./nginx-certs.sh
+
+# Dry-run the whole chain, deploy hooks included
+sudo certbot renew --dry-run --run-deploy-hooks
+
+# Expiry of every virtual host (disk + actually served)
+python3 scripts/check_ssl_expiry.py
+
+# (Re)install the deploy hook, e.g. after a server reinstall
+./scripts/install-certbot-deploy-hook.sh              # via sudo
+./scripts/install-certbot-deploy-hook.sh --via-docker # docker group is enough
 
 # SSL proof directories must exist in ssl-proof/{domain}/
 mkdir -p ssl-proof/new-domain/
 ```
+
+Note: `sudo` on the proxy host prompts for a password, but the `dhwp` user is in the
+`docker` group and the container mounts `/etc/letsencrypt` while running as root -
+so `docker exec -i dhunica_proxypass sh -c 'cat > /etc/...'` writes as root on the
+host when sudo is unavailable.
 
 ### Authentication Setup
 - HTTP Basic Auth files in `htpassword/.htpasswd_{site}`
