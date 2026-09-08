@@ -77,7 +77,8 @@ docker logs dhunica_proxypass
 # - DigiCert CA: /etc/digicertca/live/dh.unica.it/
 # - Let's Encrypt: /etc/letsencrypt/live/domain/
 
-# Rinnovo automatico certificati Let's Encrypt
+# Rinnovo MANUALE dei certificati Let's Encrypt (forzatura).
+# Il rinnovo automatico e' gia' attivo: vedi "Rinnovo automatico Let's Encrypt".
 ./nginx-certs.sh
 ```
 
@@ -245,6 +246,59 @@ server {
 | `*.dh.unica.it` | DigiCert CA | `/etc/digicertca/live/dh.unica.it/` |
 | `*.unica.it` | DigiCert CA | `/etc/digicertca/live/domain/` |
 | Domini esterni | Let's Encrypt | `/etc/letsencrypt/live/domain/` |
+
+### Rinnovo automatico Let's Encrypt
+
+Il rinnovo si compone di **due pezzi che devono funzionare entrambi**:
+
+| # | Pezzo | Dove | Cosa fa |
+|---|-------|------|---------|
+| 1 | `snap.certbot.renew.timer` | systemd (host) | Esegue `certbot renew` 2 volte al giorno; rinnova i certificati a meno di 30 giorni dalla scadenza |
+| 2 | `00-reload-dhunica-proxy.sh` | `/etc/letsencrypt/renewal-hooks/deploy/` | Deploy hook: ricarica nginx nel container **dopo** ogni rinnovo |
+
+⚠️ **Il pezzo 2 e' indispensabile.** Nginx legge i certificati all'avvio e li tiene
+in memoria: se il file su disco viene rinnovato ma nginx non viene ricaricato, il
+proxy continua a servire il certificato vecchio fino alla scadenza. E' esattamente
+il guasto capitato ad `atlante.atliteg.org`, con il certificato rinnovato
+l'08/08/2026 e quello servito scaduto il 07/09/2026 (container up da 4 mesi).
+
+Sorgente versionato dell'hook: [`scripts/certbot-deploy-hook.sh`](scripts/certbot-deploy-hook.sh).
+Installazione / reinstallazione:
+
+```bash
+# Sul server del proxy
+cd /home/dhwp/proxy.dh.unica
+./scripts/install-certbot-deploy-hook.sh                # via sudo
+./scripts/install-certbot-deploy-hook.sh --via-docker    # senza sudo (gruppo docker)
+```
+
+**Rete di sicurezza** (terzo livello, in cron come utente `dhwp`): un reload
+graceful giornaliero garantisce che un certificato nuovo entri in servizio entro
+24 ore anche se l'hook venisse rimosso o fallisse.
+
+```cron
+30 4 * * * /home/dhwp/proxy.dh.unica/scripts/nginx-reload-safety-net.sh
+```
+
+#### Verifiche
+
+```bash
+# Timer di rinnovo attivo e prossima esecuzione
+systemctl list-timers snap.certbot.renew.timer
+
+# Prova a vuoto del rinnovo, hook inclusi
+sudo certbot renew --dry-run --run-deploy-hooks
+
+# Scadenze di tutti i virtual host (cert su disco + cert effettivamente servito)
+python3 scripts/check_ssl_expiry.py
+
+# Certificato realmente servito per un dominio
+echo | openssl s_client -servername DOMINIO -connect DOMINIO:443 2>/dev/null \
+  | openssl x509 -noout -dates
+
+# Log del deploy hook
+sudo tail /var/log/certbot-deploy-hook.log
+```
 
 ### Misure di Sicurezza
 
