@@ -99,19 +99,39 @@ docker logs dhunica_proxypass
 
 ### Aggiungere un Nuovo Sito
 
-1. **Crea il file di configurazione** in `sites-enabled/`:
+1. **Richiedi il record DNS** aprendo un ticket su [helpdesk.unica.it/servicePortal](https://helpdesk.unica.it/servicePortal), destinato al Supporto Tecnico / Team di Rete. Per i sottodomini `dh.unica.it` **non esiste un wildcard DNS**: ogni sottodominio va richiesto singolarmente, anche se il certificato SSL (`*.dh.unica.it`) è già wildcard e non richiede modifiche.
+
+   Testo della richiesta (sostituisci i placeholder):
+   ```text
+   Spett.le Supporto Tecnico / Team di Rete,
+
+   Si richiede gentilmente l'aggiunta/configurazione del seguente record DNS:
+
+   Hostname (FQDN): <NUOVO_SOTTODOMINIO>.dh.unica.it
+   Tipo Record: Record A
+   Indirizzo IP: 90.147.144.144
+
+   Resto a disposizione per eventuali chiarimenti o informazioni aggiuntive.
+
+   Cordiali saluti,
+   <NOME_RICHIEDENTE>
+   ```
+
+   Attendi la propagazione del record prima di proseguire (verifica con `dig +short <NUOVO_SOTTODOMINIO>.dh.unica.it`).
+
+2. **Crea il file di configurazione** in `sites-enabled/`:
 ```bash
 # Per sottodomini DH: sottodominio_dhunica.conf
 # Per domini UNICA: dominio.conf  
 # Per domini esterni: dominio.conf
 ```
 
-2. **Configura SSL proof directory**:
+3. **Configura SSL proof directory**:
 ```bash
 mkdir -p ssl-proof/nuovo-dominio/
 ```
 
-3. **Applica la configurazione**:
+4. **Applica la configurazione**:
 ```bash
 ./nginx-reload.sh
 ```
