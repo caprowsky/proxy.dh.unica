@@ -22,6 +22,7 @@ Questo progetto implementa un reverse proxy bassu su **nginx** che gestisce il t
 | **https://archivistica.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto Archivistica | DigiCert CA |
 | **https://archivistica.dh.unica.it/phaidra** | `90.147.144.147:9000` | DH Sottopercorso | Repository Phaidra | DigiCert CA |
 | **https://archivistica.dh.unica.it/patrimonio** | `90.147.144.146:8000` | DH Sottopercorso | Sistema Patrimonio | DigiCert CA |
+| **https://almanaccostampasarda.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Almanacco Stampa Sarda | DigiCert CA |
 | **https://arte.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto Arte | DigiCert CA |
 | **https://artemusei.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Arte e Musei | DigiCert CA |
 | **https://asuca.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto ASUCA | DigiCert CA |
