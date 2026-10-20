@@ -17,3 +17,7 @@ logs/
 
 # Certificati SSL temporanei
 new_ssl/
+
+# File di lavoro di Playwright (snapshot, console, profili): mai nel repo
+.playwright-mcp/
+.playwright-cli/
