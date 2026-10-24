@@ -1,0 +1,15 @@
+[Unit]
+Description=Porte Docker raggiungibili solo dal reverse proxy (scripts/firewall del repo proxy.dh.unica)
+# DOCKER-USER esiste solo dopo l'avvio di Docker; PartOf riapplica le regole
+# quando Docker viene riavviato.
+After=docker.service
+PartOf=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/solo-dal-proxy.sh apply
+ExecStop=/usr/local/sbin/solo-dal-proxy.sh remove
+
+[Install]
+WantedBy=multi-user.target docker.service
