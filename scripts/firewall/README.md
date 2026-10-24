@@ -7,7 +7,7 @@
 | dhwp2 · 90.147.144.156 | 8000 | MediaWiki (PHP 7.4) era raggiungibile da Internet senza passare dal proxy |
 | dhpasteur · 90.147.144.180 | 8000 | luoghimemoriaeuropa (PHP 8.2.9) era raggiungibile da Internet senza passare dal proxy |
 
-La configurazione di ogni VM sta in `hosts/<vm>.env`.
+La configurazione di ogni VM sta in `hosts/<vm>.conf`.
 
 ## Installazione su una VM
 
@@ -15,7 +15,7 @@ Si esegue come root. Prima va scelta la VM e verificato il nome dell'interfaccia
 
 ```sh
 install -m 0755 solo-dal-proxy.sh /usr/local/sbin/solo-dal-proxy.sh
-install -m 0644 hosts/<vm>.env /etc/default/solo-dal-proxy
+install -m 0644 hosts/<vm>.conf /etc/default/solo-dal-proxy
 install -m 0644 solo-dal-proxy.service /etc/systemd/system/solo-dal-proxy.service
 systemctl daemon-reload
 systemctl enable --now solo-dal-proxy.service
