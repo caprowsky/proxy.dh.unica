@@ -21,3 +21,6 @@ new_ssl/
 # File di lavoro di Playwright (snapshot, console, profili): mai nel repo
 .playwright-mcp/
 .playwright-cli/
+
+# Basic auth che vivono solo sul server (il repo è pubblico): non committare gli hash
+htpassword/.htpasswd_almanaccostampasarda

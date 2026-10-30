@@ -53,6 +53,7 @@ Questo progetto implementa un reverse proxy bassu su **nginx** che gestisce il t
 | **https://storia.dh.unica.it/asmsa** | `90.147.144.156:6000` | DH Sottopercorso | Progetto SCCSU | DigiCert CA |
 | **https://storia.dh.unica.it/ademprivia** | `90.147.144.156:5000` | DH Sottopercorso | Dipartimento DSAS | DigiCert CA |
 | **https://storia.dh.unica.it/luoghimemoriaeuropa** | `90.147.144.180:8000` | DH Sottopercorso | Progetto Saturniana | DigiCert CA |
+| **https://storia.dh.unica.it/almanaccostampasarda** | `almanaccostampasarda_mockup:80` | DH Sottopercorso | Almanacco della Sardegna, mockup (con password) | DigiCert CA |
 | **https://studiericerche.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Studi e Ricerche | DigiCert CA |
 | **https://ticket.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Sistema Ticketing | DigiCert CA |
 | **https://xdams.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Sistema X-DAMS | DigiCert CA |
