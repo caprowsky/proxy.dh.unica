@@ -15,7 +15,7 @@
 
 ## 📋 Panoramica
 
-Questo progetto implementa un **reverse proxy nginx** ad alta disponibilità che gestisce il traffico per **47+ siti web** dell'Università di Cagliari, principalmente focalizzati sulle Digital Humanities. Il sistema route intelligentemente le richieste tra domini pubblici e servizi backend distribuiti.
+Questo progetto implementa un **reverse proxy nginx** ad alta disponibilità che gestisce il traffico per **37 host pubblici e 59 URL HTTPS** dell'Università di Cagliari, principalmente focalizzati sulle Digital Humanities. Il sistema route intelligentemente le richieste tra domini pubblici e servizi backend distribuiti.
 
 - 🐳 **Containerizzato** - Deployment semplificato con Docker
 - 🔐 **SSL/TLS Completo** - Certificati DigiCert CA e Let's Encrypt
@@ -29,21 +29,30 @@ Questo progetto implementa un **reverse proxy nginx** ad alta disponibilità che
 
 ```mermaid
 graph TB
-    Internet[🌐 Internet] --> Proxy[🔄 DH.UNICA Reverse Proxy]
-    
-    Proxy --> DH[📚 dh.unica.it<br/>Digital Humanities Portal]
-    Proxy --> UNICA[🏛️ *.unica.it<br/>University Domains]
-    Proxy --> EXT[🌍 External Domains<br/>cosmomed.org, digitaliststor.it]
-    
-    DH --> DHContainer[🐳 dh.unica_nginx:80<br/>Main DH Container]
-    DH --> Backend1[🖥️ 90.147.144.145<br/>Storia, Glossari, Antas]
-    DH --> Backend2[🖥️ 90.147.144.146<br/>Patrimonio, Risorse]
-    DH --> Backend3[🖥️ 90.147.144.147<br/>EMODSAR, Phaidra]
-    
-    UNICA --> Backend4[🖥️ 90.147.144.148<br/>Humanities, GIS]
-    UNICA --> Backend5[🖥️ 90.147.144.162<br/>Archivio Storico]
-    
-    EXT --> Backend6[🖥️ External Servers<br/>CoSMoMed, DigitalIst]
+    Internet[🌐 Internet] --> Proxy[🔄 DH.UNICA Reverse Proxy<br/>dhwp 90.147.144.144]
+
+    Proxy --> DH[📚 *.dh.unica.it<br/>Digital Humanities]
+    Proxy --> UNICA[🏛️ *.unica.it<br/>Ateneo]
+    Proxy --> EXT[🌍 Domini esterni<br/>atliteg.org, cosmomed.org, digitaliststor.it]
+
+    DH --> DHContainer[🐳 dh.unica_nginx:80<br/>Portale e siti dei progetti]
+    DH --> B145[🖥️ 90.147.144.145<br/>Storia: sottopercorsi]
+    DH --> B146[🖥️ 90.147.144.146<br/>Risorse, ASUCA]
+    DH --> B147[🖥️ 90.147.144.147<br/>Glossari, EMODSAR, Censorato generale, Biblioteca Lussu]
+    DH --> B148[🖥️ 90.147.144.148 dhgeo<br/>Lizmap, Mergin Maps, GeoServer]
+    DH --> B149[🖥️ 90.147.144.149<br/>xDams, Trajos]
+    DH --> B156[🖥️ 90.147.144.156<br/>Storia: MediaWiki, ASMSA, Ademprivia]
+    DH --> B180[🖥️ 90.147.144.180 dhpasteur<br/>Genovesi a Cagliari, Luoghi della memoria]
+
+    UNICA --> B162[🖥️ 90.147.144.162<br/>Archivio Storico]
+    UNICA --> B146
+    UNICA --> B156
+    UNICA --> B180
+    UNICA --> B148
+
+    EXT --> B147
+    EXT --> B148
+    EXT --> B162
 ```
 
 ---
@@ -153,42 +162,69 @@ curl -I https://storia.dh.unica.it/colonizzazioninterne
 
 ## 🌍 Siti Web Gestiti
 
-### 📊 Statistiche Generali
-- **48 URL pubbliche** distinte
-- **7 domini principali** (dh.unica.it, unica.it, cosmomed.org, digitaliststor.it, thelastofus.it, atliteg.org)
-- **23 sottoprogetti** del dominio dh.unica.it
-- **8 server backend** fisici/virtuali
+Elenco ricavato dai file in `sites-enabled/` e verificato il 2/11/2026. Per ogni URL la tabella in [doc/SITI_WEB_REVERSE_PROXY.md](doc/SITI_WEB_REVERSE_PROXY.md) riporta backend, certificato e descrizione.
 
-### 🏛️ Domini Principali
+**Ultimi aggiunti:** `lizmap.dh.unica.it` e `mergin.dh.unica.it`, verso dhgeo (2/11/2026).
 
-#### Digital Humanities (dh.unica.it)
-```
-🏠 https://dh.unica.it                    - Portale principale
-📚 https://storia.dh.unica.it            - Progetto Storia  
-🎨 https://arte.dh.unica.it              - Progetto Arte
-🗺️ https://geografia.dh.unica.it         - Progetto Geografia
-📖 https://letteratura.dh.unica.it       - Progetto Letteratura
-🎵 https://musica.dh.unica.it            - Progetto Musica
-... e molti altri!
-```
+### 📊 Numeri
 
-#### Università di Cagliari (unica.it)
-```
-🏛️ https://archiviostorico.unica.it      - Archivio Storico
-🎓 https://humanities.unica.it            - Portale Humanities  
-📅 https://400.unica.it                   - 400 Anni Ateneo
-📦 https://patrimonio.archiviostorico.unica.it - Gestione Patrimonio
-```
+- **37 host pubblici**: 36 in HTTPS più `www.thelastofus.it`, solo HTTP
+- **23 sottopercorsi** inoltrati a un backend diverso da quello dell'host
+- **8 VM backend** (da 90.147.144.145 a .180) e **3 container** sulla stessa macchina del proxy: `dh.unica_nginx`, `labimus_apache_1`, `almanaccostampasarda_mockup`
 
-#### Domini Esterni
-```
-🗺️ https://atlante.atliteg.org           - Atlante ATLITEG
-🌍 https://www.cosmomed.org               - CoSMoMed Project
-📚 https://www.digitaliststor.it          - Istituto Storia Digitale
+### 📚 dh.unica.it (certificato wildcard DigiCert `*.dh.unica.it`)
 
-```
+| Host | Backend | Sottopercorsi con backend propri |
+|---|---|---|
+| https://dh.unica.it | `dh.unica_nginx` | |
+| https://almanaccostampasarda.dh.unica.it | `dh.unica_nginx` | |
+| https://architettura.dh.unica.it | `dh.unica_nginx` | |
+| https://archivistica.dh.unica.it | `dh.unica_nginx` | `/censoratogenerale` (.147:9000), `/asuca` (.146:8000) |
+| https://arte.dh.unica.it | `dh.unica_nginx` | |
+| https://artemusei.dh.unica.it | `dh.unica_nginx` | |
+| https://asuca.dh.unica.it | `dh.unica_nginx` | |
+| https://cinema.dh.unica.it | `dh.unica_nginx` | |
+| https://doc.dh.unica.it | `dh.unica_nginx` | |
+| https://docs.dh.unica.it | `dh.unica_nginx` | |
+| https://editoria.dh.unica.it | `dh.unica_nginx` | |
+| https://filologia.dh.unica.it | `dh.unica_nginx` | |
+| https://geo.dh.unica.it | `dh.unica_nginx` | `/geoserver` (.148:80) |
+| https://geografia.dh.unica.it | `dh.unica_nginx` | |
+| https://glossari.dh.unica.it | .147:3001 | `/admin`, `/api/` (.147:3000) |
+| https://letteratura.dh.unica.it | `dh.unica_nginx` | |
+| https://libriebiblioteche.dh.unica.it | `dh.unica_nginx` | `/biblioteca-lussu` (.147:8080) |
+| https://linguistica.dh.unica.it | `dh.unica_nginx` | `/emodsar` (.147:8000) |
+| https://lizmap.dh.unica.it | .148:8084 (dhgeo) | `/files/` (.148:8087, Filebrowser) |
+| https://ludica.dh.unica.it | `dh.unica_nginx` | |
+| https://mergin.dh.unica.it | .148:8086 (dhgeo) | |
+| https://musica.dh.unica.it | `dh.unica_nginx` | `/labimus` (`labimus_apache_1`), `/trajos` (.149:9000) |
+| https://risorse.dh.unica.it | .146:7000 | |
+| https://storia.dh.unica.it | `dh.unica_nginx` | `/storiedigitali` (.145:7000), `/archiviodigitalerisorgimento` (.145:8000), `/colonizzazioninterne` (.145:4000), `/risorse_omc` (.145:5000), `/risorse` (.145:6000), `/mediawiki` (.156:8000), `/asmsa` (.156:6000), `/ademprivia` (.156:5000), `/genovesi_cagliari` (.180:6000), `/luoghimemoriaeuropa` (.180:8000), `/almanaccostampasarda/` (`almanaccostampasarda_mockup`, con password) |
+| https://studiericerche.dh.unica.it | `dh.unica_nginx` | |
+| https://ticket.dh.unica.it | `dh.unica_nginx` | |
+| https://xdams.dh.unica.it | `dh.unica_nginx` | `/xDams` (.149:80) |
 
-> 📋 **Lista completa**: Vedi [SITI_WEB_REVERSE_PROXY.md](doc/SITI_WEB_REVERSE_PROXY.md) per la tabella dettagliata di tutti i siti.
+### 🏛️ unica.it
+
+| Host | Backend | Certificato |
+|---|---|---|
+| https://400.unica.it | .156:7000 | DigiCert dedicato |
+| https://aiucd2026.unica.it | .180:7000 | Let's Encrypt (`www.` rimanda al dominio senza www) |
+| https://archiviostorico.unica.it | .162:5000 | DigiCert |
+| https://humanities.unica.it | .148:7000 | DigiCert dedicato |
+| https://patrimonio.archiviostorico.unica.it | .146:9000 | DigiCert |
+| https://patrimonio-web.archiviostorico.unica.it | .146:8000 | DigiCert |
+
+### 🌍 Domini esterni
+
+| Host | Backend | Certificato |
+|---|---|---|
+| https://atlante.atliteg.org | .147:9000 | Let's Encrypt |
+| https://www.cosmomed.org | .148:9000 | Let's Encrypt |
+| https://www.digitaliststor.it | .162:8000, `/risorse` su .162:6000 | Let's Encrypt |
+| http://www.thelastofus.it | non servito | nessuno: il nome non risolve nel DNS; il blocco verso .156:5000 è ignorato da nginx (nome duplicato) |
+
+Gli indirizzi abbreviati (.145, .147, …) stanno tutti in 90.147.144.0/24.
 
 ---
 
