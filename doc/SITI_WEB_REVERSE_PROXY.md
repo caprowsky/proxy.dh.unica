@@ -2,7 +2,7 @@
 
 ## Panoramica del Progetto
 
-Questo progetto implementa un reverse proxy bassu su **nginx** che gestisce il traffico per 37 host pubblici (59 URL HTTPS) dell'Università di Cagliari, principalmente focalizzati sulle Digital Humanities. Il reverse proxy è containerizzato con Docker e gestisce sia il traffico HTTP che HTTPS, con certificati SSL configurati.
+Questo progetto implementa un reverse proxy bassu su **nginx** che gestisce il traffico per 35 host pubblici (56 URL HTTPS) dell'Università di Cagliari, principalmente focalizzati sulle Digital Humanities. Il reverse proxy è containerizzato con Docker e gestisce sia il traffico HTTP che HTTPS, con certificati SSL configurati.
 
 ## Architettura
 
@@ -20,17 +20,14 @@ Questo progetto implementa un reverse proxy bassu su **nginx** che gestisce il t
 | **https://dh.unica.it** | `dh.unica_nginx:80` | DH Principale | Portale principale Digital Humanities | DigiCert CA |
 | **https://architettura.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto Architettura | DigiCert CA |
 | **https://archivistica.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto Archivistica | DigiCert CA |
-| **https://archivistica.dh.unica.it/censoratogenerale** | `90.147.144.147:9000` | DH Sottopercorso | Censorato generale | DigiCert CA |
-| **https://archivistica.dh.unica.it/asuca** | `90.147.144.146:8000` | DH Sottopercorso | ASUCA | DigiCert CA |
 | **https://almanaccostampasarda.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Almanacco Stampa Sarda | DigiCert CA |
 | **https://lizmap.dh.unica.it** | `90.147.144.148:8084` | DH Sottodominio | WebGIS Lizmap (progetto PARC), dhgeo | DigiCert CA |
 | **https://lizmap.dh.unica.it/files** | `90.147.144.148:8087` | DH Sottopercorso | Filebrowser dei progetti Lizmap, dhgeo | DigiCert CA |
 | **https://mergin.dh.unica.it** | `90.147.144.148:8086` | DH Sottodominio | Mergin Maps CE, rilievi sul campo, dhgeo | DigiCert CA |
-| **https://arte.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto Arte | DigiCert CA |
 | **https://artemusei.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Arte e Musei | DigiCert CA |
 | **https://asuca.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto ASUCA | DigiCert CA |
 | **https://cinema.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto Cinema | DigiCert CA |
-| **https://doc.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Documentazione | DigiCert CA |
+| **https://doc.dh.unica.it** | nessuno, risponde 410 | DH Sottodominio | Dismesso il 13/11/2026 (non è docs); il blocco resta finché c'è il record DNS | DigiCert CA |
 | **https://docs.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Documentazione | DigiCert CA |
 | **https://editoria.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto Editoria | DigiCert CA |
 | **https://filologia.dh.unica.it** | `dh.unica_nginx:80` | DH Sottodominio | Progetto Filologia | DigiCert CA |
@@ -76,7 +73,6 @@ Questo progetto implementa un reverse proxy bassu su **nginx** che gestisce il t
 | **https://www.cosmomed.org** | `90.147.144.148:9000` | Dominio Esterno | Comparative Studies Mediterranean | Let's Encrypt |
 | **https://www.digitaliststor.it** | `90.147.144.162:8000` | Dominio Esterno | Istituto per la Storia Digitale | Let's Encrypt |
 | **https://www.digitaliststor.it/risorse** | `90.147.144.162:6000` | Sottopercorso Esterno | Risorse DigitalIstStorico | Let's Encrypt |
-| **http://www.thelastofus.it** | `90.147.144.156:5000` | Dominio Esterno | Progetto "The Last of Us": non servito, il nome non risolve nel DNS e il blocco con il backend è ignorato da nginx (nome duplicato) | SSL Disabilitato |
 
 ## Configurazioni Speciali
 
@@ -102,9 +98,9 @@ Il reverse proxy gestisce il traffico inoltrando le richieste dai domini pubblic
 
 ## Statistiche
 
-- **Host pubblici**: 37 (36 in HTTPS, più `www.thelastofus.it` solo HTTP)
-- **URL HTTPS**: 59, di cui 23 sottopercorsi con un backend proprio
-- **Domini**: dh.unica.it (portale e 26 sottodomini), unica.it (6 host), atliteg.org, cosmomed.org, digitaliststor.it, thelastofus.it
+- **Host pubblici**: 35, tutti in HTTPS (`doc.dh.unica.it` risponde 410)
+- **URL HTTPS**: 56, di cui 21 sottopercorsi con un backend proprio
+- **Domini**: dh.unica.it (portale e 25 sottodomini), unica.it (6 host), atliteg.org, cosmomed.org, digitaliststor.it
 - **Server backend**: 8 VM (90.147.144.145, .146, .147, .148, .149, .156, .162, .180) e 3 container sulla macchina del proxy
 
 ## Note Tecniche
@@ -113,8 +109,8 @@ Il reverse proxy gestisce il traffico inoltrando le richieste dai domini pubblic
 - **Client max body size**: 4000MB per upload di file grandi
 - **Protezione PHP**: Blocco dell'accesso diretto a file PHP nelle directory `/files/`
 - **Proxy timeout**: 900 secondi per operazioni lunghe
-- **SSL redirect**: Tutti i siti reindirizzano automaticamente da HTTP a HTTPS (eccetto thelastofus.it)
+- **SSL redirect**: Tutti i siti reindirizzano automaticamente da HTTP a HTTPS
 
 ---
 
-*Documento generato dall'analisi delle configurazioni nginx il 2 ottobre 2025; tabella riallineata a `sites-enabled/` il 2 novembre 2026.*
+*Documento generato dall'analisi delle configurazioni nginx il 2 ottobre 2025; tabella riallineata a `sites-enabled/` il 2 novembre 2026 e il 13 novembre 2026 (tolti arte, thelastofus e i sottopercorsi /censoratogenerale e /asuca di Archivistica).*

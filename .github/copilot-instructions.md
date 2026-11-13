@@ -8,7 +8,7 @@ This is a Docker-based nginx reverse proxy managing 30+ websites for the Univers
 ### Service Categories
 - **DH Subdomains**: `*.dh.unica.it` → mostly proxy to `dh.unica_nginx:80` container
 - **UNICA Domains**: `*.unica.it` → proxy to specific external IPs (90.147.144.x)  
-- **External Domains**: `cosmomed.org`, `digitaliststor.it`, `thelastofus.it`
+- **External Domains**: `cosmomed.org`, `digitaliststor.it`, `atliteg.org`
 
 ### Configuration Naming Convention
 Files in `sites-enabled/` follow strict patterns:

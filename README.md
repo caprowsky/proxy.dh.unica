@@ -164,12 +164,14 @@ curl -I https://storia.dh.unica.it/colonizzazioninterne
 
 Elenco ricavato dai file in `sites-enabled/` e verificato il 2/11/2026. Per ogni URL la tabella in [doc/SITI_WEB_REVERSE_PROXY.md](doc/SITI_WEB_REVERSE_PROXY.md) riporta backend, certificato e descrizione.
 
+**Tolti il 13/11/2026:** `arte.dh.unica.it` e `www.thelastofus.it` (non risolvevano nel DNS), i sottopercorsi `/censoratogenerale` e `/asuca` di Archivistica (AtLiTeG resta su https://atlante.atliteg.org); `doc.dh.unica.it` risponde 410.
+
 **Ultimi aggiunti:** `lizmap.dh.unica.it` e `mergin.dh.unica.it`, verso dhgeo (2/11/2026).
 
 ### 📊 Numeri
 
-- **37 host pubblici**: 36 in HTTPS più `www.thelastofus.it`, solo HTTP
-- **23 sottopercorsi** inoltrati a un backend diverso da quello dell'host
+- **35 host pubblici**, tutti in HTTPS; `doc.dh.unica.it` risponde 410 (dismesso il 13/11/2026)
+- **21 sottopercorsi** inoltrati a un backend diverso da quello dell'host
 - **8 VM backend** (da 90.147.144.145 a .180) e **3 container** sulla stessa macchina del proxy: `dh.unica_nginx`, `labimus_apache_1`, `almanaccostampasarda_mockup`
 
 ### 📚 dh.unica.it (certificato wildcard DigiCert `*.dh.unica.it`)
@@ -179,12 +181,11 @@ Elenco ricavato dai file in `sites-enabled/` e verificato il 2/11/2026. Per ogni
 | https://dh.unica.it | `dh.unica_nginx` | |
 | https://almanaccostampasarda.dh.unica.it | `dh.unica_nginx` | |
 | https://architettura.dh.unica.it | `dh.unica_nginx` | |
-| https://archivistica.dh.unica.it | `dh.unica_nginx` | `/censoratogenerale` (.147:9000), `/asuca` (.146:8000) |
-| https://arte.dh.unica.it | `dh.unica_nginx` | |
+| https://archivistica.dh.unica.it | `dh.unica_nginx` | |
 | https://artemusei.dh.unica.it | `dh.unica_nginx` | |
 | https://asuca.dh.unica.it | `dh.unica_nginx` | |
 | https://cinema.dh.unica.it | `dh.unica_nginx` | |
-| https://doc.dh.unica.it | `dh.unica_nginx` | |
+| https://doc.dh.unica.it | nessuno: risponde 410 | dismesso il 13/11/2026; il blocco resta finché c'è il record DNS |
 | https://docs.dh.unica.it | `dh.unica_nginx` | |
 | https://editoria.dh.unica.it | `dh.unica_nginx` | |
 | https://filologia.dh.unica.it | `dh.unica_nginx` | |
@@ -222,7 +223,6 @@ Elenco ricavato dai file in `sites-enabled/` e verificato il 2/11/2026. Per ogni
 | https://atlante.atliteg.org | .147:9000 | Let's Encrypt |
 | https://www.cosmomed.org | .148:9000 | Let's Encrypt |
 | https://www.digitaliststor.it | .162:8000, `/risorse` su .162:6000 | Let's Encrypt |
-| http://www.thelastofus.it | non servito | nessuno: il nome non risolve nel DNS; il blocco verso .156:5000 è ignorato da nginx (nome duplicato) |
 
 Gli indirizzi abbreviati (.145, .147, …) stanno tutti in 90.147.144.0/24.
 
@@ -446,7 +446,7 @@ docker logs -f dhunica_proxypass
 docker logs dhunica_proxypass 2>&1 | grep -i error
 
 # Test completo connettività
-for url in storia.dh.unica.it arte.dh.unica.it; do
+for url in storia.dh.unica.it cinema.dh.unica.it; do
   echo "Testing $url..."
   curl -I "https://$url"
 done
